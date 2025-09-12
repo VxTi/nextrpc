@@ -21,7 +21,7 @@
     "type": "module",
     "main": "index.js",
     "scripts": {
-        "build": "tsc && node esbuild.config.ts",
+        "build": "rm -rf ./dist && tsc && node esbuild.config.ts",
         "test": "vitest",
         "lint": "eslint . --ext .ts,.tsx"
     },
