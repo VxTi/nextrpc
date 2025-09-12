@@ -7,8 +7,8 @@ import {
   type PossiblyUndefined,
   type RouteConfig,
   type Validated,
-  ValidationType,
   type Validator,
+  ValidationType,
 } from './types';
 
 export function createRoute<

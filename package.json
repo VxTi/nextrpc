@@ -1,6 +1,6 @@
 {
     "name": "@vxti/nextrpc",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Typed NextJS API routes ",
     "keywords": [
         "nextjs",
@@ -19,14 +19,14 @@
     "license": "MIT",
     "author": "VxTi",
     "type": "module",
-    "main": "index.js",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "scripts": {
         "build": "rm -rf ./dist && tsc && node esbuild.config.ts",
         "test": "vitest",
         "lint": "eslint . --ext .ts,.tsx"
     },
     "dependencies": {
-        "esbuild-node-externals": "^1.18.0",
         "next": "^15.5.3",
         "zod": "^4.1.8"
     },
@@ -36,6 +36,7 @@
         "@types/eslint-plugin-prettier": "^3.1.3",
         "@types/node": "^24.3.1",
         "esbuild": "^0.25.9",
+        "esbuild-node-externals": "^1.18.0",
         "eslint": "^9.35.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.4",
