@@ -1,22 +1,35 @@
 {
-    "name": "nextrpc",
-    "type": "module",
+    "name": "@vxti/nextrpc",
     "version": "1.0.0",
     "description": "Typed NextJS API routes ",
-    "main": "index.js",
     "keywords": [
         "nextjs",
         "typescript",
         "api",
         "rpc"
     ],
+    "homepage": "https://github.com/VxTi/nextrpc#readme",
+    "bugs": {
+        "url": "https://github.com/VxTi/nextrpc/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/VxTi/nextrpc.git"
+    },
+    "license": "ISC",
+    "author": "VxTi",
+    "type": "module",
+    "main": "index.js",
     "scripts": {
         "build": "tsc && node esbuild.config.ts",
         "test": "vitest",
         "lint": "eslint . --ext .ts,.tsx"
     },
-    "author": "VxTi",
-    "license": "ISC",
+    "dependencies": {
+        "esbuild-node-externals": "^1.18.0",
+        "next": "^15.5.3",
+        "zod": "^4.1.8"
+    },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
         "@eslint/js": "^9.35.0",
@@ -32,10 +45,5 @@
         "typescript": "^5.9.2",
         "typescript-eslint": "^8.43.0",
         "vitest": "^4.0.0-beta.11"
-    },
-    "dependencies": {
-        "esbuild-node-externals": "^1.18.0",
-        "next": "^15.5.3",
-        "zod": "^4.1.8"
     }
 }
