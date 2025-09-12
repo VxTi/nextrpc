@@ -1,6 +1,6 @@
 {
     "name": "@vxti/nextrpc",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Typed NextJS API routes ",
     "keywords": [
         "nextjs",
@@ -16,7 +16,7 @@
         "type": "git",
         "url": "git+https://github.com/VxTi/nextrpc.git"
     },
-    "license": "ISC",
+    "license": "MIT",
     "author": "VxTi",
     "type": "module",
     "main": "index.js",
