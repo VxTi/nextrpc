@@ -1,148 +1,79 @@
-import { type z, type ZodObject, type ZodRawShape } from 'zod/v4';
-import { type RouteConfig } from './types';
-
-type ComposeRouteSet<T extends RpcRouteSet> = T extends {
-  [K in keyof T]: infer F;
-}
-  ? F extends RouteConfig<
-      any,
-      any,
-      any,
-      any,
-      any,
-      any,
-      infer Path extends string,
-      any
-    >
-    ? { [K in Path]: F }
-    : never
-  : never;
+import {
+  type InferBodyValidator,
+  type InferQueryValidator,
+  type InferReturnType,
+  type RouteConfig,
+} from './types';
 
 type RpcRouteSet = Record<
   string,
-  RouteConfig<any, any, any, any, any, any, any, any>
+  RouteConfig<any, any, any, any, any, any, any, any, any>
 >;
 
-type InferValidators<
-  Set extends RpcRouteSet,
-  Client extends RpcClient<Set>,
-  Path extends keyof Client,
-> = Client extends { [K in Path]: infer Route }
-  ? Route extends RouteConfig<
-      any,
-      any,
-      infer BodyValidator,
-      infer QueryValidator,
-      infer ParamsValidator,
-      any,
-      any,
-      any
-    >
-    ? [BodyValidator, QueryValidator, ParamsValidator]
-    : never
-  : never;
+export type RpcClient<RouteSet extends RpcRouteSet> = {
+  [R in keyof RouteSet as RouteSet[R]['path']]: {
+    [M in RouteSet[R]['method']]: Extract<RouteSet[R], { method: M }>;
+  };
+};
 
-type InferBodyValidator<
-  Set extends RpcRouteSet,
-  Client extends RpcClient<Set>,
-  Path extends keyof Client,
-> =
-  InferValidators<Set, Client, Path> extends [infer BodyValidator, any, any]
-    ? BodyValidator extends ZodRawShape
-      ? z.infer<ZodObject<BodyValidator>>
-      : never
-    : never;
-
-type InferQueryValidator<
-  Set extends RpcRouteSet,
-  Client extends RpcClient<Set>,
-  Path extends keyof Client,
-> =
-  InferValidators<Set, Client, Path> extends [any, infer QueryValidator, any]
-    ? QueryValidator extends ZodRawShape
-      ? z.infer<ZodObject<QueryValidator>>
-      : never
-    : never;
-
-type InferReturnType<
-  Set extends RpcRouteSet,
-  Client extends RpcClient<Set>,
-  Path extends keyof Client,
-> = Client extends { [K in Path]: infer Route }
-  ? Route extends RouteConfig<
-      any,
-      any,
-      any,
-      any,
-      any,
-      infer ResponseType,
-      any,
-      any
-    >
-    ? ResponseType
-    : never
-  : never;
-
-/**
- * Creates a typed server context object from given routes.
- * The result can only be indexed by registered route paths.
- */
-export type RpcClient<Routes extends RpcRouteSet> = ComposeRouteSet<Routes>;
-
-/**
- * Creates a typed server context object from given routes.
- * The result can only be indexed by registered route paths.
- */
-export function createRpcClient<T extends RpcRouteSet>(
-  routes: T
-): RpcClient<T> {
-  const server: Partial<RpcClient<T>> = {};
+export function createRpcClient<RpcRoutes extends RpcRouteSet>(
+  routes: RpcRoutes
+): RpcClient<RpcRoutes> {
+  const client: any = {};
 
   for (const route of Object.values(routes)) {
-    // Re-key it by route.path
-    (server as any)[route.path] = route;
+    if (!client[route.path]) {
+      client[route.path] = {};
+    }
+    client[route.path][route.method] = route;
   }
 
-  return server as RpcClient<T>;
+  return client as RpcClient<RpcRoutes>;
 }
 
 /**
  * Fetch function restricted only to registered paths.
  */
-export async function fetchRpc<
-  Set extends RpcRouteSet,
-  TClient extends RpcClient<Set>,
-  TPath extends keyof Set,
->(
-  client: TClient,
-  path: TPath,
+export async function fetchRpc<TRpcClient extends RpcClient<any>>(
+  path: keyof TRpcClient,
+  method: TRpcClient[typeof path][keyof TRpcClient[typeof path]]['method'],
   options: {
-    body: InferBodyValidator<Set, TClient, TPath>;
-    queryParameters?: InferQueryValidator<Set, TClient, TPath>;
+    body: InferBodyValidator<TRpcClient[typeof path][typeof method]>;
+    queryParameters?: InferQueryValidator<
+      TRpcClient[typeof path][typeof method]
+    >;
     headers?: Record<string, string>;
   }
-): Promise<InferReturnType<Set, TClient, TPath> | undefined> {
-  // runtime safety: throw if invalid path sneaks in
-  if (!(path in client)) {
-    throw new Error(`Path ${String(path)} is not registered on the server`);
+): Promise<
+  InferReturnType<TRpcClient[typeof path][typeof method]> | undefined
+> {
+  const formattedUrl = new URL(path as string);
+
+  if (options.queryParameters) {
+    for (const [key, value] of Object.entries(options.queryParameters)) {
+      formattedUrl.searchParams.append(key, String(value));
+    }
   }
 
-  const config = client[path];
   try {
-    const response = await fetch(config['path'], {
-      method: config.method,
+    const response = await fetch(formattedUrl, {
+      method: method as string,
       headers: {
-        ...(config.method === 'POST'
-          ? { 'Content-Type': 'application/json' }
-          : {}),
+        ...(method === 'POST' ? { 'Content-Type': 'application/json' } : {}),
         ...(options.headers ?? {}),
       },
-      body: config.method === 'POST' ? JSON.stringify(options.body) : undefined,
+      body: method === 'POST' ? JSON.stringify(options.body) : undefined,
     });
-    const json = await response.json();
 
-    return json as InferReturnType<Set, TClient, TPath>;
-  } catch {
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return (await response.json()) as InferReturnType<
+      TRpcClient[typeof path][typeof method]
+    >;
+  } catch (error) {
+    console.error('fetchRpc error:', error);
     return undefined;
   }
 }

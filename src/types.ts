@@ -9,6 +9,16 @@ export type ErrorResponse = {
   error: string;
 };
 
+export type RequestMethod =
+  | 'GET'
+  | 'POST'
+  | 'PUT'
+  | 'DELETE'
+  | 'PATCH'
+  | 'OPTIONS';
+
+type MaybePromise<T> = T | Promise<T>;
+
 export type PossiblyUndefined<
   InitialType,
   Nullable extends BooleanType,
@@ -46,6 +56,61 @@ export type Validated<
   [ValidationType.PARAMS]?: z.infer<ZodObject<Params>>;
 };
 
+/**
+ * Infer the body validator type from a RouteConfig
+ */
+export type InferBodyValidator<T> =
+  T extends RouteConfig<
+    any,
+    any,
+    infer BodyValidator,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
+    ? BodyValidator extends ZodRawShape
+      ? z.infer<ZodObject<BodyValidator>>
+      : never
+    : never;
+
+/**
+ * Infer the query validator type from a RouteConfig
+ */
+export type InferQueryValidator<T> =
+  T extends RouteConfig<
+    any,
+    any,
+    any,
+    infer QueryValidator,
+    any,
+    any,
+    any,
+    any,
+    any
+  >
+    ? QueryValidator extends ZodRawShape
+      ? z.infer<ZodObject<QueryValidator>>
+      : never
+    : never;
+
+export type InferReturnType<T> =
+  T extends RouteConfig<
+    any,
+    any,
+    any,
+    any,
+    any,
+    infer ResponseType,
+    any,
+    any,
+    any
+  >
+    ? ResponseType
+    : never;
+
 export type RequestHandler<
   TBody,
   TQueryParams,
@@ -66,7 +131,7 @@ export type RequestHandler<
   session: PossiblyUndefined<SessionType, RequiresAuthentication>;
   searchParameters: PossiblyUndefined<TQueryParams, Strict>;
   params: PossiblyUndefined<TParams, Strict>;
-}) => Promise<NextResponse<ResponseType>> | NextResponse<ResponseType>;
+}) => MaybePromise<NextResponse<ResponseType>>;
 
 export type RouteConfig<
   StrictRequestProcessing extends BooleanType,
@@ -77,14 +142,13 @@ export type RouteConfig<
   ResponseType,
   Path extends string,
   UserSession,
+  Method extends RequestMethod,
 > = {
   /**
    * The HTTP method for the route. If not specified, the route will
    * respond to all HTTP methods.
-   *
-   * @default GET
    */
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS';
+  method: Method;
 
   /**
    * The path for the route, e.g., `/api/products/[id]`
@@ -133,7 +197,7 @@ export type RouteConfig<
    */
   sessionValidator?: (
     request: NextRequest
-  ) => (UserSession | undefined) | Promise<UserSession | undefined>;
+  ) => MaybePromise<UserSession | undefined>;
 
   /**
    * Validates the request data, e.g., the body of a `POST` request.

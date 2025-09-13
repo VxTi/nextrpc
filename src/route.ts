@@ -9,6 +9,7 @@ import {
   type Validated,
   type Validator,
   ValidationType,
+  type RequestMethod,
 } from './types';
 
 export function createRoute<
@@ -20,6 +21,7 @@ export function createRoute<
   ReturnType,
   Path extends string,
   SessionType,
+  Method extends RequestMethod,
 >(
   config: RouteConfig<
     Strict,
@@ -29,7 +31,8 @@ export function createRoute<
     ParamsValidator,
     ReturnType,
     Path,
-    SessionType
+    SessionType,
+    Method
   >
 ): {
   config: RouteConfig<
@@ -40,7 +43,8 @@ export function createRoute<
     ParamsValidator,
     ReturnType,
     Path,
-    SessionType
+    SessionType,
+    Method
   >;
   handler: BasicRequestHandler<z.infer<ZodObject<ParamsValidator>>>;
 } {
@@ -113,7 +117,7 @@ async function validateRequest<
   TQuery extends ZodRawShape,
   TParams extends ZodRawShape,
 >(
-  config: RouteConfig<any, any, TBody, TQuery, TParams, any, any, any>,
+  config: RouteConfig<any, any, TBody, TQuery, TParams, any, any, any, any>,
   request: NextRequest,
   paramsPromise: Promise<any>
 ): Promise<Validated<TBody, TQuery, TParams>> {
