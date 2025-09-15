@@ -16,11 +16,9 @@ export async function fetchRpc<
   method: TRouteConfig['method'],
   options: FetchRpcInit<TRouteConfig>
 ): Promise<InferReturnType<TRouteConfig> | undefined> {
-  const formattedUrl = new URL(path as string);
-
-  for (const [key, value] of Object.entries(options.query ?? {})) {
-    formattedUrl.searchParams.append(key, String(value));
-  }
+  const formattedUrl: string = options.query
+    ? `${path}?${options.query}`
+    : path;
 
   const body: string | undefined =
     method === 'POST' && options.body
