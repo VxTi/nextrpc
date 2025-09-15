@@ -1,7 +1,5 @@
 # NextRPC
 
----
-
 NextRPC is a high-performance, type-safe RPC framework for building scalable and maintainable APIs. It leverages modern TypeScript features to provide a seamless developer experience.
 
 ## Features
@@ -9,14 +7,13 @@ NextRPC is a high-performance, type-safe RPC framework for building scalable and
 - **Type Safety**: End-to-end type safety with TypeScript.
 - **Performance**: Optimized for low latency and high throughput.
 - **Scalability**: Designed to handle large-scale applications.
-- **Easy Integration**: Works well with popular frameworks like Next.js, Express, and more
 
 ## How to Use
 
 You can start using NextRPC in your project by following these steps:
 1. Install the package:
    ```bash
-   npm install nextrpc
+   npm install @vxti/nextrpc
    ```
 2. Set up your route
 

@@ -14,14 +14,14 @@ export async function fetchRpc<
 >(
   path: TRouteConfig['path'],
   method: TRouteConfig['method'],
-  options: FetchRpcInit<TRouteConfig>
+  options?: FetchRpcInit<TRouteConfig>
 ): Promise<InferReturnType<TRouteConfig> | undefined> {
-  const formattedUrl: string = options.query
+  const formattedUrl: string = options?.query
     ? `${path}?${options.query}`
     : path;
 
   const body: string | undefined =
-    method === 'POST' && options.body
+    method === 'POST' && options?.body
       ? JSON.stringify(options.body)
       : undefined;
 
@@ -31,7 +31,7 @@ export async function fetchRpc<
       method: method as string,
       headers: {
         ...(method === 'POST' ? { 'Content-Type': 'application/json' } : {}),
-        ...(options.headers ?? {}),
+        ...(options?.headers ?? {}),
       },
       body,
     });
