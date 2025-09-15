@@ -1,34 +1,39 @@
-import {
-  type InferBodyValidator,
-  type InferQueryValidator,
-  type InferReturnType,
-  type RouteConfig,
+import type {
+  InferBodyValidator,
+  InferQueryValidator,
+  InferReturnType,
+  RouteConfig,
 } from './types';
 
 /**
- * Fetch function restricted only to registered paths.
+ * A generic function to perform RPC calls to a specified route.
+ *
+ * @template TRouteConfig - The route configuration type defining the path, method, body, query parameters, and return type.
+ * @param path - The endpoint path to call, extracted from the route configuration generic.
+ * @param method - The HTTP method to use (e.g., 'GET', 'POST'), extracted from the route configuration generic.
+ * @param options - An object containing the request body, optional query parameters, and optional headers.
+ * @returns A promise that resolves to the response data or undefined in case of an error.
  */
 export async function fetchRpc<
   TRouteConfig extends RouteConfig<any, any, any, any, any, any, any, any, any>,
 >(
   path: TRouteConfig['path'],
   method: TRouteConfig['method'],
-  options: {
+  options: Omit<RequestInit, 'body'> & {
     body: InferBodyValidator<TRouteConfig>;
-    queryParameters?: InferQueryValidator<TRouteConfig>;
+    query?: InferQueryValidator<TRouteConfig>;
     headers?: Record<string, string>;
   }
 ): Promise<InferReturnType<TRouteConfig> | undefined> {
   const formattedUrl = new URL(path as string);
 
-  if (options.queryParameters) {
-    for (const [key, value] of Object.entries(options.queryParameters)) {
-      formattedUrl.searchParams.append(key, String(value));
-    }
+  for (const [key, value] of Object.entries(options.query ?? {})) {
+    formattedUrl.searchParams.append(key, String(value));
   }
 
   try {
     const response = await fetch(formattedUrl, {
+      ...options,
       method: method as string,
       headers: {
         ...(method === 'POST' ? { 'Content-Type': 'application/json' } : {}),

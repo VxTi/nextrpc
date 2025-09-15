@@ -1,6 +1,10 @@
 import type { NextRequest, NextResponse } from 'next/server';
 import type { z, ZodObject, ZodRawShape } from 'zod/v4';
 
+/**
+ * A type representing a boolean value, differing from the standard `boolean` type.
+ * This type is specifically defined to allow for more precise type constraints
+ */
 export type BooleanType = true | false;
 
 export type RequestParamsType = Record<string, unknown>;
@@ -9,6 +13,9 @@ export type ErrorResponse = {
   error: string;
 };
 
+/**
+ * The HTTP methods supported by the route handler.
+ */
 export type RequestMethod =
   | 'GET'
   | 'POST'
@@ -29,7 +36,7 @@ export type BasicRequestHandler<RequestParameters> = (
   { params }: { params: Promise<RequestParameters> }
 ) => Promise<NextResponse>;
 
-export const enum ValidationType {
+export const enum ValidateIn {
   BODY = 'body',
   QUERY = 'query',
   PARAMS = 'params',
@@ -41,9 +48,9 @@ export type Validators<
   Query extends ZodRawShape,
   Params extends ZodRawShape,
 > = {
-  [ValidationType.BODY]?: Validator<Body>;
-  [ValidationType.QUERY]?: Validator<Query>;
-  [ValidationType.PARAMS]?: Validator<Params>;
+  [ValidateIn.BODY]?: Validator<Body>;
+  [ValidateIn.QUERY]?: Validator<Query>;
+  [ValidateIn.PARAMS]?: Validator<Params>;
 };
 
 export type Validated<
@@ -51,9 +58,9 @@ export type Validated<
   Query extends ZodRawShape,
   Params extends ZodRawShape,
 > = {
-  [ValidationType.BODY]?: z.infer<ZodObject<Body>>;
-  [ValidationType.QUERY]?: z.infer<ZodObject<Query>>;
-  [ValidationType.PARAMS]?: z.infer<ZodObject<Params>>;
+  [ValidateIn.BODY]?: z.infer<ZodObject<Body>>;
+  [ValidateIn.QUERY]?: z.infer<ZodObject<Query>>;
+  [ValidateIn.PARAMS]?: z.infer<ZodObject<Params>>;
 };
 
 /**

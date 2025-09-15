@@ -8,7 +8,7 @@ esbuild
     platform: 'node',
     target: 'node20',
     outfile: 'dist/index.js',
-    sourcemap: true,
+    sourcemap: false,
     minify: true,
     plugins: [nodeExternalsPlugin()],
   })

@@ -8,8 +8,8 @@ import {
   type RouteConfig,
   type Validated,
   type Validator,
-  ValidationType,
   type RequestMethod,
+  ValidateIn,
 } from './types';
 
 export function createRoute<
@@ -70,9 +70,9 @@ export function createRoute<
       }
 
       const {
-        [ValidationType.BODY]: parsedBody,
-        [ValidationType.PARAMS]: parsedParams,
-        [ValidationType.QUERY]: parsedQueryParams,
+        [ValidateIn.BODY]:   parsedBody,
+        [ValidateIn.PARAMS]: parsedParams,
+        [ValidateIn.QUERY]:  parsedQueryParams,
       } = await validateRequest(config, request, params);
 
       return await config.handler({
@@ -122,7 +122,7 @@ async function validateRequest<
   paramsPromise: Promise<any>
 ): Promise<Validated<TBody, TQuery, TParams>> {
   const validators = Object.entries(config.requestValidators ?? {}) as [
-    ValidationType,
+    ValidateIn,
     Validator<TBody | TQuery | TParams>,
   ][];
 
@@ -130,7 +130,7 @@ async function validateRequest<
 
   for (const [$in, validator] of validators) {
     let validationData: any;
-    const validationType = $in as ValidationType;
+    const validationType = $in as ValidateIn;
 
     switch (validationType) {
       case 'body': {
