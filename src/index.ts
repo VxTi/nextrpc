@@ -1,5 +1,5 @@
 export { fetchRpc } from './fetch-rpc';
-export * from './route';
+export { createRoute } from './route';
 export * from './types';
 
 export {};

@@ -4,10 +4,10 @@ import { nodeExternalsPlugin } from 'esbuild-node-externals';
 esbuild
   .build({
     entryPoints: ['src/index.ts'],
+    outfile: 'dist/index.js',
     bundle: true,
     platform: 'node',
-    target: 'node20',
-    outfile: 'dist/index.js',
+    format: 'esm',
     sourcemap: false,
     minify: true,
     plugins: [nodeExternalsPlugin()],

@@ -70,9 +70,9 @@ export function createRoute<
       }
 
       const {
-        [ValidateIn.BODY]:   parsedBody,
+        [ValidateIn.BODY]: parsedBody,
         [ValidateIn.PARAMS]: parsedParams,
-        [ValidateIn.QUERY]:  parsedQueryParams,
+        [ValidateIn.QUERY]: parsedQueryParams,
       } = await validateRequest(config, request, params);
 
       return await config.handler({
