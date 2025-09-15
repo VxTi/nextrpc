@@ -7,7 +7,7 @@ esbuild
     bundle: true,
     platform: 'node',
     target: 'node20',
-    outfile: 'dist/bundle.js',
+    outfile: 'dist/index.js',
     sourcemap: true,
     minify: true,
     plugins: [nodeExternalsPlugin()],
