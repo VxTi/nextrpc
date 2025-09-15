@@ -1,6 +1,6 @@
 {
     "name": "@vxti/nextrpc",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "author": "VxTi",
     "description": "Typed NextJS API routes ",
     "type": "module",
