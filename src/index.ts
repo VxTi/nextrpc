@@ -1,3 +1,3 @@
 export * from './route';
-export * from './rpc-client';
+export * from './fetch-rpc';
 export * from './types';
