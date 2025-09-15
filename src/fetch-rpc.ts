@@ -1,9 +1,4 @@
-import type {
-  InferBodyValidator,
-  InferQueryValidator,
-  InferReturnType,
-  RouteConfig,
-} from './types';
+import type { FetchRpcInit, InferReturnType, RouteConfig } from './types';
 
 /**
  * A generic function to perform RPC calls to a specified route.
@@ -19,17 +14,18 @@ export async function fetchRpc<
 >(
   path: TRouteConfig['path'],
   method: TRouteConfig['method'],
-  options: Omit<RequestInit, 'body'> & {
-    body: InferBodyValidator<TRouteConfig>;
-    query?: InferQueryValidator<TRouteConfig>;
-    headers?: Record<string, string>;
-  }
+  options: FetchRpcInit<TRouteConfig>
 ): Promise<InferReturnType<TRouteConfig> | undefined> {
   const formattedUrl = new URL(path as string);
 
   for (const [key, value] of Object.entries(options.query ?? {})) {
     formattedUrl.searchParams.append(key, String(value));
   }
+
+  const body: string | undefined =
+    method === 'POST' && options.body
+      ? JSON.stringify(options.body)
+      : undefined;
 
   try {
     const response = await fetch(formattedUrl, {
@@ -39,7 +35,7 @@ export async function fetchRpc<
         ...(method === 'POST' ? { 'Content-Type': 'application/json' } : {}),
         ...(options.headers ?? {}),
       },
-      body: method === 'POST' ? JSON.stringify(options.body) : undefined,
+      body,
     });
 
     if (!response.ok) {

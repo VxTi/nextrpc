@@ -9,6 +9,14 @@ export type BooleanType = true | false;
 
 export type RequestParamsType = Record<string, unknown>;
 
+export type FetchRpcInit<
+  TRouteConfig extends RouteConfig<any, any, any, any, any, any, any, any, any>,
+> = Omit<RequestInit, 'body'> & {
+  body?: InferBodyValidator<TRouteConfig>;
+  query?: InferQueryValidator<TRouteConfig>;
+  headers?: Record<string, string>;
+};
+
 export type ErrorResponse = {
   error: string;
 };
