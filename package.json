@@ -1,7 +1,12 @@
 {
     "name": "@vxti/nextrpc",
-    "version": "1.0.2",
+    "version": "1.0.3",
+    "author": "VxTi",
     "description": "Typed NextJS API routes ",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": ["dist"],
     "keywords": [
         "nextjs",
         "typescript",
@@ -17,10 +22,6 @@
         "url": "git+https://github.com/VxTi/nextrpc.git"
     },
     "license": "MIT",
-    "author": "VxTi",
-    "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
     "scripts": {
         "build": "rm -rf ./dist && tsc && node esbuild.config.ts",
         "test": "vitest",
