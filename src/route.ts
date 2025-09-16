@@ -16,7 +16,7 @@ export function createRoute<
   Strict extends BooleanType,
   RequiresAuthentication extends BooleanType,
   BodyValidator extends ZodRawShape,
-  QueryValidator extends ZodRawShape,
+  QueryValidator extends ZodRawShape & Record<string, string>,
   ParamsValidator extends ZodRawShape,
   ReturnType,
   Path extends string,
@@ -114,7 +114,7 @@ export function createRoute<
 
 async function validateRequest<
   TBody extends ZodRawShape,
-  TQuery extends ZodRawShape,
+  TQuery extends ZodRawShape & Record<string, string>,
   TParams extends ZodRawShape,
 >(
   config: RouteConfig<any, any, TBody, TQuery, TParams, any, any, any, any>,
