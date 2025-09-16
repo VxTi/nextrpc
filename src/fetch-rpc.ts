@@ -17,7 +17,7 @@ export async function fetchRpc<
   options?: FetchRpcInit<TRouteConfig>
 ): Promise<InferReturnType<TRouteConfig> | undefined> {
   const formattedUrl: string = options?.query
-    ? `${path}?${options.query}`
+    ? `${path}?${new URLSearchParams(options.query as Record<string, string>).toString()}`
     : path;
 
   const body: string | undefined =

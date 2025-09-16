@@ -152,7 +152,7 @@ export type RouteConfig<
   StrictRequestProcessing extends BooleanType,
   RequiresAuthentication extends BooleanType,
   ZodRequestBodyValidator extends ZodRawShape,
-  ZodRequestQueryValidator extends ZodRawShape,
+  ZodRequestQueryValidator extends ZodRawShape & Record<string, string>,
   ZodRequestParamsValidator extends ZodRawShape,
   ResponseType,
   Path extends string,
